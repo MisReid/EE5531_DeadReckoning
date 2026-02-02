@@ -7,7 +7,7 @@ IMUEstimator::IMUEstimator() : Node("imu_estimator") {
 	this->vy = 0;
 	this->x = 0;
 	this->y = 0;
-	this->t = this->now().seconds();
+	this->t = -1;
 	imu_sub_ = this->create_subscription<sensor_msgs::msg::Imu>(
 		"/imu", 10, std::bind(&IMUEstimator::Update, this, std::placeholders::_1));
 	odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/imu_integration/odom", 10);
@@ -15,20 +15,23 @@ IMUEstimator::IMUEstimator() : Node("imu_estimator") {
 }
 
 void IMUEstimator::Update(const sensor_msgs::msg::Imu::SharedPtr msg) {
-  int sec = msg->header.stamp.sec;
-  int nsec = msg->header.stamp.nanosec;
+  float sec = msg->header.stamp.sec;
+  float nsec = msg->header.stamp.nanosec;
   float ax = msg->linear_acceleration.x;
   float ay = msg->linear_acceleration.y;
   float wz = msg->angular_velocity.z;
   RCLCPP_INFO(this->get_logger(), "Received IMU data: ax=%f, ay=%f, wz=%f", ax, ay, wz);
 
-  float ax_world = ax * std::cos(theta) - ay * std::sin(theta);
-  float ay_world = ax * std::sin(theta) + ay * std::cos(theta);
-  RCLCPP_INFO(this->get_logger(), "Conversion done: ax=%f, ay=%f", ax_world, ay_world);
+  if (this->t < 0) {
+    this->t = sec + (nsec * 1e-9);
+  }
 
-  float dt = (sec + nsec * 1e-9) - t;
+  double nt = sec + (nsec * 1e-9);
+  double dt = nt - this->t;
   this->t += dt;
   this->theta += wz * dt;
+  float ax_world = ax * std::cos(this->theta) - ay * std::sin(this->theta);
+  float ay_world = ax * std::sin(this->theta) + ay * std::cos(this->theta);
   this->vx += ax_world * dt;
   this->vy += ay_world * dt;
   this->x += this->vx * dt;
@@ -46,7 +49,7 @@ void IMUEstimator::Update(const sensor_msgs::msg::Imu::SharedPtr msg) {
   pose_msg.pose.position.x = this->x;
   pose_msg.pose.position.y = this->y;
   pose_msg.pose.orientation = msg->orientation;
-    poses.push_back(pose_msg);
+  poses.push_back(pose_msg);
 
   // Odom message
   odom_msg.header.stamp = this->now();

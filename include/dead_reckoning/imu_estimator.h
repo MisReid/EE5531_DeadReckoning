@@ -8,7 +8,7 @@ class IMUEstimator : public rclcpp::Node {
     IMUEstimator();
   private:
     void Update(const sensor_msgs::msg::Imu::SharedPtr msg);
-    float t;
+    double t;
     float theta;
     float x;
     float y;
