@@ -26,8 +26,21 @@ target_include_directories(dead_reckoning_node
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 
+add_executable(imu_estimator_node src/imu_estimator.cpp)
+ament_target_dependencies(imu_estimator_node PUBLIC 
+  rclcpp
+  sensor_msgs
+  geometry_msgs
+  nav_msgs
+)
+target_include_directories(imu_estimator_node
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+
 install(TARGETS
   dead_reckoning_node
+  imu_estimator_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
