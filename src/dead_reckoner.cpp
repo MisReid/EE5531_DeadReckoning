@@ -7,8 +7,8 @@ DeadReckoner::DeadReckoner() : Node("dead_reckoner") {
   this->y = 0;
   twist_sub_ = this->create_subscription<geometry_msgs::msg::TwistStamped>(
 		"/cmd_vel", 10, std::bind(&DeadReckoner::Update, this, std::placeholders::_1));
-  odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
-  path_pub_ = this->create_publisher<nav_msgs::msg::Path>("/path", 10);
+  odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/dead_reckoning/odom", 10);
+  path_pub_ = this->create_publisher<nav_msgs::msg::Path>("/dead_reckoning/path", 10);
 }
 
 // v = linear.x
