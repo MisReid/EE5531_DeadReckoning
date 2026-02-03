@@ -17,3 +17,6 @@ Neither path was completley accurate to the ground truth. The dead reckoning (in
 Additional work needs to be done to correct the IMU implementation. However, with a more functional implementation, both implmentations could be fused together. This can be done with naive ways like weighted averageing. More robust implementations can correct for noise using covariance but this data would have to be calculated from the sensors used in the robot.
 
 ![result](https://github.com/MisReid/EE5531_DeadReckoning/blob/master/imgs/Screenshot%202026-02-02%20152154.png)
+
+## AI Disclosure
+The use of Github Copilot was used in the development of this code. It provided AI assisted autocomplete when developing code. All code was tested and verified against actual ROS documentation. The specific plugin used to access Copilot can be found at [copilot.nvim](https://github.com/github/copilot.vim).
